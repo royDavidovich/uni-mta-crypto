@@ -1,0 +1,88 @@
+# Compiled object files
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic Libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static Libraries
+*.lib
+*.a
+
+# Executables
+*.exe
+*.out
+*.app
+*.elf
+
+# Debug and Symbol files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Build directories (common names)
+build/
+Build/
+bin/
+Bin/
+out/
+Out/
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Code::Blocks
+*.depend
+*.layout
+*.cbp
+*.layout.save
+
+# Qt Creator
+*.pro.user*
+*.qmake.stash
+
+# Visual Studio
+*.sdf
+*.opensdf
+*.vcxproj*
+*.suo
+*.ncb
+*.user
+*.ipch
+*.pdb
+*.log
+*.tlog/
+*.lastbuildstate
+*.vs/
+
+# Xcode
+*.xcworkspace
+*.xcuserstate
+*.xcuserdatad/
+*.xcuserdata/
+DerivedData/
+
+# General IDE/editor junk
+*~
+*.swp
+*.swo
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Clangd
+.cache/
+.clangd/
+.clangd/
+compile_commands.json
