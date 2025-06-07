@@ -50,7 +50,6 @@ static void submit_plaintext_candidate(long idx, const char *decrypted, const ch
         g_plaintext_candidate->guess = candidate;
         g_plaintext_candidate->id = idx;
 
-        g_password_cracked = 1;
         pthread_cond_broadcast(&g_new_cipher_cond);
 
         long ts = get_unix_timestamp_seconds();
@@ -74,13 +73,12 @@ static void brute_force_decryption(long idx, char *ciphertext, size_t cipher_len
 
     long iterations = 0;
     long start_ts = get_unix_timestamp_seconds();
-    // printf("%ld [DECRYPTER #%ld] [INFO] Starting brute‐force on new ciphertext (len=%zu)...\n",
-    //        start_ts, idx, cipher_len);
 
     while (1) {
         iterations++;
         pthread_mutex_lock(&g_mutex);
-        if (g_password_cracked) {
+        if (g_password_cracked || strcmp(g_ciphertext, ciphertext) != 0) {
+            // cipher changed
             pthread_mutex_unlock(&g_mutex);
             break;
         }
@@ -99,6 +97,7 @@ static void brute_force_decryption(long idx, char *ciphertext, size_t cipher_len
         }
 
         submit_plaintext_candidate(idx, decrypted, trial_key, cipher_len, key_len, iterations);
+
         break;
     }
 
@@ -110,10 +109,15 @@ void *decrypter_thread_fn(void *arg) {
     long idx = (long)arg;
 
     while (1) {
+
+        //TODO maybe remove local copy, can create sync issues
+
         char *my_cipher_copy = NULL;
         size_t my_cipher_len = 0;
 
         wait_for_ciphertext(&my_cipher_copy, &my_cipher_len);
+
+        // TODO check runs with wrong password (add breakpoint in encryptor if statement that check it)
         brute_force_decryption(idx, my_cipher_copy, my_cipher_len);
         free(my_cipher_copy);
     }

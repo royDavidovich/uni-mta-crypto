@@ -46,7 +46,7 @@
 /* ────────────────────────────────────────────────────────────────────────── */
 /* Global shared state, synchronization, etc.  (unchanged from skeleton)      */
 /* ────────────────────────────────────────────────────────────────────────── */
-unsigned char *g_ciphertext = NULL;
+char *g_ciphertext = NULL;
 size_t         g_ciphertext_len = 0;
 CrackResult *g_plaintext_candidate = NULL;
 int   g_password_cracked = 0;

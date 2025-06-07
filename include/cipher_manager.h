@@ -23,7 +23,7 @@ extern "C" {
     extern pthread_cond_t  g_new_cipher_cond;
 
     extern int g_password_cracked;
-    extern unsigned char *g_ciphertext;
+    extern char *g_ciphertext;
     extern size_t g_ciphertext_len;
     extern CrackResult *g_plaintext_candidate;
 
