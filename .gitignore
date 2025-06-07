@@ -1,4 +1,9 @@
-# Compiled object files
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
 *.o
 *.obj
 
@@ -6,83 +11,19 @@
 *.gch
 *.pch
 
-# Compiled Dynamic Libraries
+# Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
-# Compiled Static Libraries
-*.lib
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
 *.a
 
-# Executables
-*.exe
+# Executables (common for Linux/macOS)
 *.out
-*.app
-*.elf
-
-# Debug and Symbol files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Build directories (common names)
-build/
-Build/
-bin/
-Bin/
-out/
-Out/
-
-# CMake files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-
-# Code::Blocks
-*.depend
-*.layout
-*.cbp
-*.layout.save
-
-# Qt Creator
-*.pro.user*
-*.qmake.stash
-
-# Visual Studio
-*.sdf
-*.opensdf
-*.vcxproj*
-*.suo
-*.ncb
-*.user
-*.ipch
-*.pdb
-*.log
-*.tlog/
-*.lastbuildstate
-*.vs/
-
-# Xcode
-*.xcworkspace
-*.xcuserstate
-*.xcuserdatad/
-*.xcuserdata/
-DerivedData/
-
-# General IDE/editor junk
-*~
-*.swp
-*.swo
-*.bak
-*.tmp
-.DS_Store
-Thumbs.db
-
-# Clangd
-.cache/
-.clangd/
-.clangd/
-compile_commands.json
+*.bin
