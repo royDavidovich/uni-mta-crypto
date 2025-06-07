@@ -118,8 +118,8 @@ static void hex_escape_and_print(const unsigned char *data, size_t len, size_t m
 static void *encrypter_thread_fn(void *arg)
 {
     (void)arg;
-    unsigned char *plaintext = NULL;
-    unsigned char *key       = NULL;
+    char *plaintext = NULL;
+    char *key       = NULL;
 
     while (1)
     {
@@ -133,15 +133,13 @@ static void *encrypter_thread_fn(void *arg)
 
         // 2) Generate a random key of length = (g_password_len / 8) bytes
         int key_len_bytes = g_password_len / 8;
-        key = malloc(key_len_bytes);
+        key = (unsigned char *)malloc(key_len_bytes);
         if (!key) {
             fprintf(stderr, "malloc(key) failed\n");
             exit(EXIT_FAILURE);
         }
-        if (RAND_bytes(key, key_len_bytes) != 1) {
-            fprintf(stderr, "RAND_bytes() failed\n");
-            exit(EXIT_FAILURE);
-        }
+
+        MTA_get_rand_data(key, key_len_bytes);
 
         // 3) Encrypt via MTA_encrypt (RC2-ECB). encrypted_len = g_password_len
         size_t encrypted_len = g_password_len;
@@ -222,6 +220,7 @@ static void *encrypter_thread_fn(void *arg)
         // 7) If cracked, log which client cracked it
         if (g_password_cracked) {
             long t3 = get_unix_timestamp_seconds();
+
             printf("%ld [ENCRYPTER] [OK] Password decrypted successfully by %s, plaintext: \"",
                    t3,
                    /* We assume g_plaintext_candidate was set by the winning client with a global tag like "CLIENT #k" */
@@ -256,7 +255,7 @@ static void *encrypter_thread_fn(void *arg)
 static void *decrypter_thread_fn(void *arg)
 {
     long idx = (long)arg; // client‐ID (0,1,2,…)
-    unsigned char *my_cipher_copy = NULL;
+    char *my_cipher_copy = NULL;
     size_t my_cipher_len = 0;
 
     while (1)
@@ -278,8 +277,8 @@ static void *decrypter_thread_fn(void *arg)
 
         // 2) Start brute‐force loop
         int key_len_bytes = (int)(my_cipher_len / 8);
-        unsigned char *trial_key = malloc(key_len_bytes);
-        unsigned char *decrypted = malloc(my_cipher_len);
+        char *trial_key = malloc(key_len_bytes);
+        char *decrypted = malloc(my_cipher_len);
         if (!trial_key || !decrypted) {
             fprintf(stderr, "malloc(trial_key/decrypted) failed\n");
             exit(EXIT_FAILURE);
@@ -301,10 +300,7 @@ static void *decrypter_thread_fn(void *arg)
             pthread_mutex_unlock(&g_mutex);
 
             // (b) Generate a random key candidate
-            if (RAND_bytes(trial_key, key_len_bytes) != 1) {
-                fprintf(stderr, "[DECRYPTER #%ld] RAND_bytes() failed\n", idx);
-                exit(EXIT_FAILURE);
-            }
+            MTA_get_rand_data(trial_key, key_len_bytes);
 
             // (c) Attempt decryption
             unsigned int out_len = (unsigned int)my_cipher_len;
@@ -403,10 +399,10 @@ int main(int argc, char **argv)
     int saw_n = 0, saw_l = 0;   // flags to track whether -n and -l were provided
     long temp;
 
-    /* Instead of defaulting to 1 or 8, initialize to 0 so we can detect “not provided.” */
-    int g_num_decrypters = 0;
-    int g_password_len   = 0;
-    int g_timeout_secs   = 0;  /* default = no timeout */
+    // /* Instead of defaulting to 1 or 8, initialize to 0 so we can detect “not provided.” */
+    // int g_num_decrypters = 0;
+    // int g_password_len   = 0;
+    // int g_timeout_secs   = 0;  /* default = no timeout */
 
     static struct option long_opts[] = {
         {"num-of-decrypters", required_argument, 0, 'n'},
