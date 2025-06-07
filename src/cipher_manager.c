@@ -32,13 +32,13 @@
 #include <pthread.h>
 #include <sys/time.h>    // for struct timeval / struct itimerspec
 #include <time.h>        // for clock_gettime(), struct timespec
-#include <errno.h>
 #include <ctype.h>       // for isprint()
 #include <limits.h>
 //
 
 #include <mta_rand.h>
 #include <mta_crypt.h>
+
 #include "decryptor.h"
 #include "encryptor.h"
 
@@ -66,17 +66,6 @@ int g_timeout_secs   = 0;  // 0 = no timeout
 /*                                                                           */
 /* We will spin until MTA_get_rand_char() yields an isprint() character.     */
 /* ────────────────────────────────────────────────────────────────────────── */
-void mta_generate_printable(char *buffer, int len)
-{
-    for (int i = 0; i < len; i++)
-    {
-        char c;
-        do {
-            c = MTA_get_rand_char();
-        } while (!isprint((unsigned char)c));
-        buffer[i] = c;
-    }
-}
 
 /* Helper: wait for either “someone cracked it” or a timeout (if set). */
 void wait_for_crack_or_timeout(struct timespec *deadline)

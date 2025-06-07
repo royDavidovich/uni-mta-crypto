@@ -20,7 +20,7 @@
 
 #include <mta_rand.h>
 #include <mta_crypt.h>
-#include "mta_crypto.h"
+#include "cipher_manager.h"
 #include "decryptor.h"
 
 /* ────────────────────────────────────────────────────────────────────────── */
