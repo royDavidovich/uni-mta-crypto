@@ -34,12 +34,12 @@
 #include <time.h>        // for clock_gettime(), struct timespec
 #include <errno.h>
 #include <ctype.h>       // for isprint()
-
+//
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-#include "mta_rand.h"
-#include "mta_crypt.h"
+#include <mta_rand.h>
+#include <mta_crypt.h>
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /* Because mta_rand.h only gives us MTA_get_rand_char(), we must write our   */
@@ -482,6 +482,7 @@ int main(int argc, char **argv)
     printf("  Timeout (seconds)         : %d\n", g_timeout_secs);
 
     /* Spawn the encrypter thread */
+    MTA_crypt_init();
     pthread_t encrypter_thread;
     if (pthread_create(&encrypter_thread, NULL, encrypter_thread_fn, NULL) != 0) {
         perror("pthread_create(encrypter)");
