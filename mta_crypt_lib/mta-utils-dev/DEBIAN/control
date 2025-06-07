@@ -1,9 +1,0 @@
-Package: mta-utils-dev
-Version: 1.3
-Release: 1
-Section: custom
-Priority: optional
-Architecture: amd64
-Essential: no
-Maintainer: Gabi Karasin <gavrielk@mta.ac.il>
-Description: Provide encryption and randomization functionalities for MTA crypto exercise 2020(the year that will be remembered)
