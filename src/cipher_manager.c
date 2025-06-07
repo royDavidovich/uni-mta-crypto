@@ -34,7 +34,6 @@
 #include <time.h>        // for clock_gettime(), struct timespec
 #include <ctype.h>       // for isprint()
 #include <limits.h>
-//
 
 #include <mta_rand.h>
 #include <mta_crypt.h>
