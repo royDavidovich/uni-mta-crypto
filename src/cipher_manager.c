@@ -39,6 +39,7 @@
 #include <mta_rand.h>
 #include <mta_crypt.h>
 
+#include "cipher_manager.h"
 #include "decryptor.h"
 #include "encryptor.h"
 
@@ -47,8 +48,8 @@
 /* ────────────────────────────────────────────────────────────────────────── */
 unsigned char *g_ciphertext = NULL;
 size_t         g_ciphertext_len = 0;
-unsigned char *g_plaintext_candidate = NULL;
-volatile int   g_password_cracked = 0;
+CrackResult *g_plaintext_candidate = NULL;
+int   g_password_cracked = 0;
 
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  g_new_cipher_cond = PTHREAD_COND_INITIALIZER;
@@ -87,11 +88,25 @@ long get_unix_timestamp_seconds(void) {
     return ts.tv_sec;
 }
 
+// Helper: print password or candidate with escapes for non-printable chars
+void print_escaped(const char *buf, size_t len)
+{
+    for (size_t i = 0; i < len; i++) {
+        char c = buf[i];
+        if (isprint(c) && c != '\\' && c != '\"') {
+            putchar(c);
+        } else {
+            printf("\\x%02X", c);
+        }
+    }
+}
+
+
 /* ───────────────────────────────────────────────────────────────────────────── */
 /* When we want to log raw bytes (e.g., a key or ciphertext), we’ll print them */
 /* as an escaped hexstring, but truncated if too long.                          */
 
-void hex_escape_and_print(const unsigned char *data, size_t len, size_t max_output_bytes) {
+void hex_escape_and_print(const char *data, size_t len, int max_output_bytes) {
     // Print up to max_output_bytes in hex, then “…” if more.
     size_t to_show = (len < max_output_bytes ? len : max_output_bytes);
     for (size_t i = 0; i < to_show; i++) {

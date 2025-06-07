@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <time.h>
+#include <string.h>
 
 #include "cipher_manager.h"
 #include "mta_crypt.h"
@@ -69,19 +70,6 @@ static char *encrypt_password(char *plaintext, size_t plaintext_len,
     return encrypted;
 }
 
-
-// Helper: print password or candidate with escapes for non-printable chars
-static void print_escaped(const unsigned char *buf, size_t len)
-{
-    for (size_t i = 0; i < len; i++) {
-        unsigned char c = buf[i];
-        if (isprint(c) && c != '\\' && c != '\"') {
-            putchar(c);
-        } else {
-            printf("\\x%02X", c);
-        }
-    }
-}
 
 static void log_new_password_info(const char *plaintext,
                                   const unsigned char *key,
@@ -165,10 +153,14 @@ void *encrypter_thread_fn(void *arg)
         // TODO add check for wrong password
         if (g_password_cracked) {
             long t3 = get_unix_timestamp_seconds();
-            printf("%ld [ENCRYPTER] [OK] Password decrypted successfully by %s, plaintext: \"",
-                   t3, (char *)g_plaintext_candidate);
-            print_escaped((unsigned char *)g_plaintext_candidate, g_password_len);
-            printf("\"\n");
+            if (strcmp(g_plaintext_candidate->guess,plaintext) != 0) {
+                printf("%ld [ENCRYPTER] [ERROR] Wrong password %s should be %s\n", t3 ,g_plaintext_candidate->guess, plaintext);
+            }else {
+                printf("%ld [ENCRYPTER] [OK] Password decrypted successfully by %s, plaintext: \"",
+                       t3, g_plaintext_candidate->guess);
+                print_escaped(g_plaintext_candidate->guess, g_password_len);
+                printf("\"\n");
+            }
         }
 
         // 8: Clean up buffers

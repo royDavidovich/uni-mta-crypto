@@ -14,16 +14,23 @@ extern "C" {
     /* ────────────────────────────────────────────────────────────────────────── */
     /* Shared global state */
     /* ────────────────────────────────────────────────────────────────────────── */
+    typedef struct {
+        char *guess;   // the decrypted password
+        long id;       // the thread ID that guessed it
+    } CrackResult;
+
     extern pthread_mutex_t g_mutex;
     extern pthread_cond_t  g_new_cipher_cond;
 
     extern int g_password_cracked;
     extern unsigned char *g_ciphertext;
     extern size_t g_ciphertext_len;
-    extern unsigned char *g_plaintext_candidate;
+    extern CrackResult *g_plaintext_candidate;
 
     extern int g_timeout_secs;
     extern int g_password_len;
+
+
 
     /* ────────────────────────────────────────────────────────────────────────── */
     /* Utility function declarations */
@@ -39,6 +46,9 @@ extern "C" {
      * If `max_len` is 0 or negative, print full length.
      */
     void hex_escape_and_print(const char *data, size_t len, int max_len);
+
+    void print_escaped(const char *buf, size_t len);
+
 
 #ifdef __cplusplus
 }
