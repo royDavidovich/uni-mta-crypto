@@ -198,7 +198,7 @@ void parse_command_line(int argc, char **argv)
 void print_configuration(void)
 {
     printf("Configuration:\n");
-    printf("  Number of decrypter threads: %d\n", g_num_decrypters);
+    printf("  Number of decrypter threads : %d\n", g_num_decrypters);
     printf("  Password length (bytes)     : %d\n", g_password_len);
     printf("  Timeout (seconds)           : %d\n", g_timeout_secs);
 }

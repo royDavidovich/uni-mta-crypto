@@ -13,6 +13,9 @@
 
 // Helper: allocate and generate printable password
 
+struct timespec now, deadline;
+
+
 static void mta_generate_printable(char *buffer, int len)
 {
     for (int i = 0; i < len; i++)
@@ -88,23 +91,26 @@ static void log_new_password_info(const char *plaintext,
     printf("\n");
 }
 
+static void update_deadline() {
+    clock_gettime(CLOCK_REALTIME, &now);
+    deadline.tv_sec = now.tv_sec + g_timeout_secs;
+    deadline.tv_nsec = now.tv_nsec;
+}
+
+
 // Helper: wait for crack signal or timeout
 static void wait_for_crack_or_timeout(void)
 {
     // TODO check if working with time threshold
 
     if (g_timeout_secs > 0) {
-        struct timespec now, deadline;
-        clock_gettime(CLOCK_REALTIME, &now);
-        deadline.tv_sec = now.tv_sec + g_timeout_secs;
-        deadline.tv_nsec = now.tv_nsec;
-
         pthread_mutex_lock(&g_mutex);
         int rc = pthread_cond_timedwait(&g_new_cipher_cond, &g_mutex, &deadline);
         if (rc == ETIMEDOUT) {
             long t2 = get_unix_timestamp_seconds();
             printf("%ld [ENCRYPTER]    [INFO] Timeout expired after %d seconds; generating new password.\n",
                    t2, g_timeout_secs);
+            update_deadline();
         }
         pthread_mutex_unlock(&g_mutex);
     } else {
@@ -139,6 +145,7 @@ void *encrypter_thread_fn(void *arg)
         g_ciphertext = encrypted;
         g_ciphertext_len = encrypted_len;
         g_password_cracked_or_timeout = 0;
+        update_deadline();
         pthread_cond_broadcast(&g_new_cipher_cond);
         pthread_mutex_unlock(&g_mutex);
 
@@ -146,7 +153,6 @@ void *encrypter_thread_fn(void *arg)
         while (g_password_cracked_or_timeout == 0) {
             // 6: Wait for crack or timeout
 
-            // TODO make sure timeout doesnt restart every while iteration (every wrong guess)
             wait_for_crack_or_timeout();
 
             pthread_mutex_lock(&g_mutex);
