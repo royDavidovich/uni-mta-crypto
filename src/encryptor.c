@@ -78,12 +78,13 @@ static void log_new_password_info(const char *plaintext,
                                   size_t encrypted_len)
 {
     long ts = get_unix_timestamp_seconds();
-    printf("%ld [ENCRYPTER] [INFO] New password generated: \"", ts);
+    printf("%ld [ENCRYPTER]    [INFO] New password generated: \"", ts);
     print_escaped((const unsigned char *)plaintext, g_password_len);
-    printf("\", key (hex): ");
-    hex_escape_and_print(key, key_len_bytes, 16);
-    printf(", encrypted (hex): ");
-    hex_escape_and_print(encrypted, encrypted_len, 16);
+    printf("\" sending to decryptors");
+    // printf("\", key (hex): ");
+    // hex_escape_and_print(key, key_len_bytes, 16);
+    // printf(", encrypted (hex): ");
+    // hex_escape_and_print(encrypted, encrypted_len, 16);
     printf("\n");
 }
 
@@ -102,7 +103,7 @@ static void wait_for_crack_or_timeout(void)
         int rc = pthread_cond_timedwait(&g_new_cipher_cond, &g_mutex, &deadline);
         if (rc == ETIMEDOUT) {
             long t2 = get_unix_timestamp_seconds();
-            printf("%ld [ENCRYPTER] [INFO] Timeout expired after %d seconds; generating new password.\n",
+            printf("%ld [ENCRYPTER]     [INFO] Timeout expired after %d seconds; generating new password.\n",
                    t2, g_timeout_secs);
         }
         pthread_mutex_unlock(&g_mutex);
@@ -154,7 +155,7 @@ void *encrypter_thread_fn(void *arg)
             long t3 = get_unix_timestamp_seconds();
 
             if (strcmp(g_plaintext_candidate->guess,plaintext) != 0) {
-                printf("%ld [ENCRYPTER] [ERROR] Wrong password %s should be %s\n", t3 ,g_plaintext_candidate->guess, plaintext);
+                printf("%ld [ENCRYPTER]    [ERROR] Wrong password %s should be %s\n", t3 ,g_plaintext_candidate->guess, plaintext);
                 pthread_mutex_unlock(&g_mutex);
 
                 continue;
@@ -162,7 +163,7 @@ void *encrypter_thread_fn(void *arg)
 
             g_ciphertext = NULL;
             g_password_cracked = 1;
-            printf("%ld [ENCRYPTER] [OK] Password decrypted successfully by %ld, plaintext: \"",
+            printf("%ld [ENCRYPTER]    [OK] Password decrypted successfully by %ld, plaintext: \"",
                    t3, g_plaintext_candidate->id);
             print_escaped(g_plaintext_candidate->guess, g_password_len);
             printf("\"\n");

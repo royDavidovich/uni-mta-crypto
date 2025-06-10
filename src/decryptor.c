@@ -55,8 +55,8 @@ static void submit_plaintext_candidate(long idx, const char *decrypted, const ch
         long ts = get_unix_timestamp_seconds();
         printf("%ld [DECRYPTER #%ld] [INFO] After decryption(\"", ts, idx);
         print_escaped(decrypted, cipher_len);
-        printf("\"), key guessed (hex): ");
-        hex_escape_and_print(key, key_len_bytes, 16);
+        // printf("\"), key guessed (hex): ");
+        // hex_escape_and_print(key, key_len_bytes, 16);
         printf(", sending to server after %ld iterations\n", iterations);
     }
     pthread_mutex_unlock(&g_mutex);
