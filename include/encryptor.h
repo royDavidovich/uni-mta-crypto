@@ -8,4 +8,4 @@
 void *encrypter_thread_fn(void *arg);
 void mta_generate_printable(char *buf, int len);
 
-#endif //ENCRYPTOR_H
+#endif // ENCRYPTOR_H
