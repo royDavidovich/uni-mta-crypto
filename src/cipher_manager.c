@@ -49,7 +49,7 @@
 char *g_ciphertext = NULL;
 size_t         g_ciphertext_len = 0;
 CrackResult *g_plaintext_candidate = NULL;
-int   g_password_cracked = 0;
+int   g_password_cracked_or_timeout = 0;
 
 pthread_mutex_t g_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  g_new_cipher_cond = PTHREAD_COND_INITIALIZER;
@@ -74,7 +74,7 @@ void wait_for_crack_or_timeout(struct timespec *deadline)
     if (g_timeout_secs > 0) {
         pthread_cond_timedwait(&g_new_cipher_cond, &g_mutex, deadline);
     } else {
-        while (!g_password_cracked) {
+        while (!g_password_cracked_or_timeout) {
             pthread_cond_wait(&g_new_cipher_cond, &g_mutex);
         }
     }

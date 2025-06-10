@@ -22,7 +22,7 @@ extern "C" {
     extern pthread_mutex_t g_mutex;
     extern pthread_cond_t  g_new_cipher_cond;
 
-    extern int g_password_cracked;
+    extern int g_password_cracked_or_timeout;
     extern char *g_ciphertext;
     extern size_t g_ciphertext_len;
     extern CrackResult *g_plaintext_candidate;

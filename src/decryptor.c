@@ -38,7 +38,7 @@ static int is_all_printable(const char *text, size_t len) {
 static void submit_plaintext_candidate(long idx, const char *decrypted, const char *key,
                                        size_t cipher_len, size_t key_len_bytes, long iterations) {
     pthread_mutex_lock(&g_mutex);
-    if (!g_password_cracked) {
+    if (!g_password_cracked_or_timeout) {
         char *candidate = malloc(cipher_len + 1);
         memcpy(candidate, decrypted, cipher_len);
         candidate[cipher_len] = '\0';
@@ -55,8 +55,8 @@ static void submit_plaintext_candidate(long idx, const char *decrypted, const ch
         long ts = get_unix_timestamp_seconds();
         printf("%ld [DECRYPTER #%ld] [INFO] After decryption(\"", ts, idx);
         print_escaped(decrypted, cipher_len);
-        // printf("\"), key guessed (hex): ");
-        // hex_escape_and_print(key, key_len_bytes, 16);
+        printf("\"), key guessed (hex): ");
+        hex_escape_and_print(key, key_len_bytes, 16);
         printf(", sending to server after %ld iterations\n", iterations);
     }
     pthread_mutex_unlock(&g_mutex);
@@ -77,7 +77,7 @@ static void brute_force_decryption(long idx, char *ciphertext, size_t cipher_len
     while (1) {
         iterations++;
         pthread_mutex_lock(&g_mutex);
-        if (g_password_cracked || strcmp(g_ciphertext, ciphertext) != 0) {
+        if (g_password_cracked_or_timeout || strcmp(g_ciphertext, ciphertext) != 0) {
             // cipher changed
             pthread_mutex_unlock(&g_mutex);
             break;
