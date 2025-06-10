@@ -35,12 +35,6 @@ Bin/
 out/
 Out/
 
-# CMake files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-
 # Code::Blocks
 *.depend
 *.layout
