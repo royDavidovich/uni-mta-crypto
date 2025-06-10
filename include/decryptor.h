@@ -7,5 +7,4 @@
 
 void *decrypter_thread_fn(void *arg);
 
-
-#endif //DECRYPTOR_H
+#endif // DECRYPTOR_H
