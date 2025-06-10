@@ -129,18 +129,15 @@ void *encrypter_thread_fn(void *arg)
 
     while (1)
     {
-        // 1 & 2: Generate password and key
         char *plaintext = generate_printable_password(g_password_len);
         int key_len_bytes = g_password_len / 8;
         unsigned char *key = generate_random_key(key_len_bytes);
 
-        // 3: Encrypt
         size_t encrypted_len;
         unsigned char *encrypted = encrypt_password(plaintext, g_password_len, key, key_len_bytes, &encrypted_len);
 
         log_new_password_info(plaintext, key, key_len_bytes, encrypted, encrypted_len);
 
-        // 5: Publish ciphertext and broadcast
         pthread_mutex_lock(&g_mutex);
         g_ciphertext = encrypted;
         g_ciphertext_len = encrypted_len;
@@ -149,21 +146,14 @@ void *encrypter_thread_fn(void *arg)
         pthread_cond_broadcast(&g_new_cipher_cond);
         pthread_mutex_unlock(&g_mutex);
 
-
         while (g_password_cracked_or_timeout == 0) {
-            // 6: Wait for crack or timeout
-
             wait_for_crack_or_timeout();
-
             pthread_mutex_lock(&g_mutex);
-
-            // 7: If cracked, log info about who cracked it and plaintext candidate
             long t3 = get_unix_timestamp_seconds();
 
             if (g_plaintext_candidate != NULL && strcmp(g_plaintext_candidate->guess,plaintext) != 0) {
                 printf("%ld [ENCRYPTER]    [ERROR] Wrong password %s should be %s\n", t3 ,g_plaintext_candidate->guess, plaintext);
                 pthread_mutex_unlock(&g_mutex);
-
                 continue;
             }
 
@@ -180,12 +170,9 @@ void *encrypter_thread_fn(void *arg)
         }
 
 
-        // 8: Clean up buffers
         free(plaintext);
         free(key);
-
-        // Loop continues for next password
     }
 
-    return NULL; // never reached
+    return NULL;
 }
